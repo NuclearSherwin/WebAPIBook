@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp;
 using WebAPIPhong.DbContext;
+using WebAPIPhong.Dtos;
 using WebAPIPhong.Models;
 using WebAPIPhong.Services.IServices;
 
@@ -18,13 +20,17 @@ namespace WebAPIPhong.Controllers
         // private fields
         private readonly ApplicationDbContext _db;
         private readonly IBookService _bookService;
+        private readonly IMapper _mapper;
 
 
         // constructor
-        public BooksController(ApplicationDbContext db,IBookService bookService)
+        public BooksController(ApplicationDbContext db,
+            IBookService bookService,
+            IMapper mapper )
         {
             _db = db;
             _bookService = bookService;
+            _mapper = mapper;
         }
         
         [HttpGet]
@@ -42,18 +48,20 @@ namespace WebAPIPhong.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create(Book bookInput)
+        public async Task<IActionResult> Create(UpsertBookDtos bookInput)
         {
-            await _bookService.Create(bookInput);
+            var book = _mapper.Map<Book>(bookInput);
+            await _bookService.Create(book);
             return Ok(StatusCode(201));
         }
 
         [HttpPut("update/{id:int}")]
         // https:localhost:5001/api/books/update/{id}
-        public async Task<IActionResult> Update([FromRoute] int id, Book bookInputNew)
+        public async Task<IActionResult> Update([FromRoute] int id, UpsertBookDtos bookInputNew)
         {
 
-            await _bookService.Update(id, bookInputNew);
+            var book = _mapper.Map<Book>(bookInputNew);
+            await _bookService.Update(id, book);
             return StatusCode(200);
         }
 

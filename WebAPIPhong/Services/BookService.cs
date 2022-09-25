@@ -44,7 +44,7 @@ namespace WebAPIPhong.Services
             // assign new value
             bookDb.Tittle = inputBook.Tittle;
             bookDb.Author = inputBook.Author;
-            bookDb.Category = inputBook.Category;
+            bookDb.CategoryId = inputBook.CategoryId;
             bookDb.PageNum = inputBook.PageNum;
 
             await _db.SaveChangesAsync();
