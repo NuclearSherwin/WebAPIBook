@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp;
 using WebAPIPhong.DbContext;
 using WebAPIPhong.Models;
+using WebAPIPhong.Services.IServices;
 
 namespace WebAPIPhong.Controllers
 {
@@ -14,59 +17,50 @@ namespace WebAPIPhong.Controllers
     {
         // private fields
         private readonly ApplicationDbContext _db;
-        
-        
+        private readonly IBookService _bookService;
+
+
         // constructor
-        public BooksController(ApplicationDbContext db)
+        public BooksController(ApplicationDbContext db,IBookService bookService)
         {
             _db = db;
+            _bookService = bookService;
         }
         
         [HttpGet]
         // https:localhost:5001/api/books
-        public IList<Book> GetAll()
+        public async Task<List<Book>> GetAll()
         {
-            return _db.Books.ToList();
+            return await _bookService.GetAll();
         }
 
         [HttpGet("{id:int}")]
         // https:localhost:5001/api/books/{id}
-        public Book GetById([FromRoute] int id)
+        public async Task<Book> GetById([FromRoute] int id)
         {
-            return _db.Books.Find(id);
+            return await _bookService.GetById(id);
         }
 
         [HttpPost("create")]
-        public IActionResult Create(Book bookInput)
+        public async Task<IActionResult> Create(Book bookInput)
         {
-            _db.Books.Add(bookInput);
-            _db.SaveChanges();
+            await _bookService.Create(bookInput);
             return Ok(StatusCode(201));
         }
 
         [HttpPut("update/{id:int}")]
         // https:localhost:5001/api/books/update/{id}
-        public IActionResult Update([FromRoute] int id, Book bookInputNew)
+        public async Task<IActionResult> Update([FromRoute] int id, Book bookInputNew)
         {
-            var bookDb = _db.Books.Find(id);
-            
-            bookDb.Tittle = bookInputNew.Tittle;
-            bookDb.Author = bookInputNew.Author;
-            bookDb.Category = bookInputNew.Category;
-            bookDb.PageNum = bookInputNew.PageNum;
 
-            _db.Books.Update(bookDb);
-            _db.SaveChanges();
-
+            await _bookService.Update(id, bookInputNew);
             return StatusCode(200);
         }
 
         [HttpDelete("delete/{id:int}")]
-        public IActionResult Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var book = _db.Books.Find(id);
-            _db.Books.Remove(book);
-            _db.SaveChanges();
+            await _bookService.Delete(id);
 
             return StatusCode(200);
         }

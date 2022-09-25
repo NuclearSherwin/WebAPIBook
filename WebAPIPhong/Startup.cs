@@ -13,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using WebAPIPhong.DbContext;
+using WebAPIPhong.Services;
+using WebAPIPhong.Services.IServices;
 
 namespace WebAPIPhong
 {
@@ -38,6 +40,8 @@ namespace WebAPIPhong
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIPhong", Version = "v1" });
             });
+
+            services.AddScoped<IBookService, BookService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
