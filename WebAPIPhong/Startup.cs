@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using WebAPIPhong.DbContext;
+using WebAPIPhong.Extensions;
 using WebAPIPhong.Services;
 using WebAPIPhong.Services.IServices;
 
@@ -20,9 +21,9 @@ namespace WebAPIPhong
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            Configuration = InitConfiguration(env);
         }
 
         public IConfiguration Configuration { get; }
@@ -31,23 +32,12 @@ namespace WebAPIPhong
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
             // services.AddDatabaseDeveloperPageExceptionFilter();
-            
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIPhong", Version = "v1" });
-            });
-
-            services.AddScoped<IBookService, BookService>();
-            services.AddScoped<ICategoryService, CategoryService>();
-            
-            // mapping configuration
-            var mapper = MappingConfig.RegisterMap().CreateMapper();
-            services.AddSingleton(mapper);
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services
+                .AddDataBase()
+                .AddServices()
+                .AddSwaggerGen()
+                .AddMapping();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,6 +57,19 @@ namespace WebAPIPhong
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        private IConfiguration InitConfiguration(IWebHostEnvironment env)
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
+                .AddEnvironmentVariables().Build();
+
+            // mapping AppSettings section in appsettings.json file value to AppSettings model
+            configuration.GetSection("AppSettings").Get<AppSettings>(options => options.BindNonPublicProperties = true);
+            return configuration;
         }
     }
 }

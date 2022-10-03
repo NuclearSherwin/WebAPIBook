@@ -11,7 +11,7 @@ namespace WebAPIPhong.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CategoryService : Controller
+    public class CategoriesController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
         private readonly ICategoryService _categoryService;
@@ -19,7 +19,7 @@ namespace WebAPIPhong.Controllers
 
 
         // constructor
-        public CategoryService(ApplicationDbContext db,
+        public CategoriesController(ApplicationDbContext db,
             ICategoryService categoryService,
             IMapper mapper )
         {
