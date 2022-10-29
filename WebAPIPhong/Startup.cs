@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using WebAPIPhong.DbContext;
 using WebAPIPhong.Extensions;
+using WebAPIPhong.Middleware;
 using WebAPIPhong.Services;
 using WebAPIPhong.Services.IServices;
 
@@ -55,6 +56,8 @@ namespace WebAPIPhong
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<ErrorHandleMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

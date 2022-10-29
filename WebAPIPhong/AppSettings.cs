@@ -4,5 +4,5 @@ namespace WebAPIPhong
     {
         public static string ConnectionStrings { get; set; }
         public static string Secret { get; set; }
-    }
+    }   
 }
