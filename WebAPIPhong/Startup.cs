@@ -59,6 +59,8 @@ namespace WebAPIPhong
 
             app.UseMiddleware<ErrorHandleMiddleware>();
 
+            app.UseMiddleware<JwtMiddleware>();
+
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
 

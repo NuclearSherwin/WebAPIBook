@@ -47,6 +47,7 @@ namespace WebAPIPhong.Services
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
+                // return user ID from JWT token if validation successfully
                 return userId;
             }
             catch
